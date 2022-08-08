@@ -1,0 +1,13 @@
+#accountpage{
+    display: block;
+    width: 60em;
+    margin-left:auto;
+    margin-right:auto;
+    padding:1em;
+}
+
+#profileImg{
+    display: block;
+    margin-left:25%;
+    margin-right:auto;
+}
