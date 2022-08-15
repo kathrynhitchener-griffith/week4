@@ -1,5 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json'})
+}
+// angular headers
 import { Router } from '@angular/router';
+
+const BACKEND_URL = 'http://localhost:3000';
+
 
 @Component({
   selector: 'app-login',
@@ -8,38 +16,40 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private router : Router) {}
+  constructor(private router : Router, private http: HttpClient) {}
   ngOnInit(): void {}
-
-  email: string = "";
+  userpwd = {username: "abcd", password: "4565"};
+  username: string = "";
   password: string = "";
   error = false;
 
-  users = [
-    {'email' : 'kat@email.com','pwd':'123'},
-    {'email' : 'emma@email.com','pwd':'234'},
-    {'email' : 'naomi@email.com','pwd':'345'}]
-
-
-  login(){
-    let valid = false;
-    // loop over all customers and check credentials
-    for(let i = 0; i < this.users.length; i++){
-        if(this.email == this.users[i].email && this.password == this.users[i].pwd){
-            valid = true;
-        }
+  public login(){
+    console.log("Sending Request...")
+    this.http.post(BACKEND_URL + '/login', 
+    {
+      "username": this.username,
+      "password": this.password
     }
-    const error =  document.getElementById('errormsg');
-    if(valid){
-      console.log("valid")
-      this.router.navigateByUrl('/account')
-    }
-    else{
-      console.log("invalid")
-      if(error !== null){
-        error.classList.remove("hidemessage")
-        error.classList.add("showmessage")
+    , httpOptions)
+    .subscribe((data: any) => {
+      if(data.valid){
+        console.log("valid response")
+        sessionStorage.setItem('username', data.username)
+        sessionStorage.setItem('birthdate', data.birthdate)
+        sessionStorage.setItem('age', data.age.toString())
+        sessionStorage.setItem('email', data.username)
+        sessionStorage.setItem('loggedIn', "true");
+        this.router.navigateByUrl('/account')
+        console.log(sessionStorage.getItem('username'))
       }
-    }
+      else{
+        const error =  document.getElementById('errormsg');
+        console.log("invalid")
+        if(error !== null){
+          error.classList.remove("hidemessage")
+          error.classList.add("showmessage")
+        }
+      }
+    })
   }
 }
